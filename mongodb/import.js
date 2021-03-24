@@ -21,8 +21,7 @@ const insertCalls = async function (db, callback) {
     .on('data', data => {
 
       const call = {
-        "lat":data.lat,
-        "lng":data.lng,
+        "location":[parseFloat(data.lng), parseFloat(data.lat)],
         "title":data.title,
         "zip":data.zip,
         "timeStamp":data.timeStamp.slice(0,7),
