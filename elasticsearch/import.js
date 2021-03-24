@@ -34,7 +34,8 @@ let calls = [];
         zip : data.zip,
         timeStamp : new Date (data.timeStamp),
         twp : data.twp,
-        addr : data.addr
+        addr : data.addr,
+        cat:data.title.slice(0,2)
       };
       calls.push(call);
       // TODO créer l'objet call à partir de la ligne
@@ -50,10 +51,10 @@ let calls = [];
     
     function createBulkInsertQuery(calls) {
       const body = calls.reduce((acc, call) => {
-        const {location,title,zip,timeStamp,twp,addr } = call;
+        const {location,title,zip,timeStamp,twp,addr,cat } = call;
         //console.log(call);
         acc.push({ index: { _index: INDEX_NAME } })
-        acc.push({location,title,zip,timeStamp,twp,addr })
+        acc.push({location,title,zip,timeStamp,twp,addr,cat })
         return acc
       }, []);
 
