@@ -19,20 +19,6 @@ async function run() {
   await client.indices.create({
     index: INDEX_NAME,
     body : {
-      "mappings": {
-        "properties":{
-          "lat" :  {"type":"geo_point"},
-          "lng":  {"type":"geo_point"},
-          "timeStamp" :  {"type":"date"},
-          "title" :  {"type":"text"},
-          "zip" :  {"type":"text"},
-          "twp" :  {"type":"text"},
-          "addr" :  {"type":"text"}
-
-
-        }
-      }
-      
       // TODO configurer l'index https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     }
   });
@@ -41,13 +27,14 @@ let calls = [];
     .pipe(csv())
     .on('data', data => {
       const call = { 
-        "lat":data.lat,
-        "lng":data.lng,
-        "title":data.title,
-        "zip":data.zip,
-        "timeStamp":data.timeStamp,
-        "twp":data.twp,
-        "addr":data.addr
+        location:[parseFloat(data.lng), parseFloat(data.lat)],
+        //lat : data.lat,
+        //lng : data.lng,
+        title : data.title,
+        zip : data.zip,
+        timeStamp : new Date (data.timeStamp),
+        twp : data.twp,
+        addr : data.addr
       };
       calls.push(call);
       // TODO créer l'objet call à partir de la ligne
@@ -63,9 +50,10 @@ let calls = [];
     
     function createBulkInsertQuery(calls) {
       const body = calls.reduce((acc, call) => {
-        const {lat,lng,title,zip,timeStamp,twp,addr } = call;
-        acc.push({ index: { _index: INDEX_NAME, _type: '_doc',_id:call.timeStamp } })
-        acc.push({lat,lng,title,zip,timeStamp,twp,addr })
+        const {location,title,zip,timeStamp,twp,addr } = call;
+        //console.log(call);
+        acc.push({ index: { _index: INDEX_NAME } })
+        acc.push({location,title,zip,timeStamp,twp,addr })
         return acc
       }, []);
 
