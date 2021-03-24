@@ -25,7 +25,7 @@ const insertCalls = async function (db, callback) {
         "lng":data.lng,
         "title":data.title,
         "zip":data.zip,
-        "timeStamp":data.timeStamp,
+        "timeStamp":data.timeStamp.slice(0,7),
         "twp":data.twp,
         "addr":data.addr
       }; // TODO créer l'objet call à partir de la ligne
