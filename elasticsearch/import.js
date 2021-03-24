@@ -19,9 +19,20 @@ async function run() {
   await client.indices.create({
     index: INDEX_NAME,
     body : {
-      "lat" :  {"type":"geo_point"},
-      "lng":  {"type":"geo_point"},
-      "timeStamp" :  {"type":"date"}
+      "mappings": {
+        "properties":{
+          "lat" :  {"type":"geo_point"},
+          "lng":  {"type":"geo_point"},
+          "timeStamp" :  {"type":"date"},
+          "title" :  {"type":"text"},
+          "zip" :  {"type":"text"},
+          "twp" :  {"type":"text"},
+          "addr" :  {"type":"text"}
+
+
+        }
+      }
+      
       // TODO configurer l'index https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     }
   });
@@ -45,14 +56,16 @@ let calls = [];
       client.bulk(createBulkInsertQuery(calls), (err, resp) => {
         if (err) console.trace(err.message);
         else console.log(`Inserted ${resp.body.items.length} calls`);
+        client.close();
       // TODO insérer les données dans ES en utilisant l'API de bulk https://www.elastic.co/guide/en/elasticsearch/reference/7.x/docs-bulk.html
       });
     });
     
     function createBulkInsertQuery(calls) {
       const body = calls.reduce((acc, call) => {
-        acc.push({ index: { _index: INDEX_NAME, _type: '_doc' } })
-        acc.push(call)
+        const {lat,lng,title,zip,timeStamp,twp,addr } = call;
+        acc.push({ index: { _index: INDEX_NAME, _type: '_doc',_id:call.timeStamp } })
+        acc.push({lat,lng,title,zip,timeStamp,twp,addr })
         return acc
       }, []);
 
