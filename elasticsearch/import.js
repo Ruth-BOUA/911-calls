@@ -19,6 +19,13 @@ async function run() {
   await client.indices.create({
     index: INDEX_NAME,
     body : {
+      "mappings" :{
+        "properties":{
+            "location" : {
+              "type":"geo_point"
+            }
+          }
+        }
       // TODO configurer l'index https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     }
   });
@@ -32,10 +39,10 @@ let calls = [];
         //lng : data.lng,
         title : data.title,
         zip : data.zip,
-        timeStamp : new Date (data.timeStamp),
+        timeStamp : new Date (data.timeStamp.slice(0, 7)),
         twp : data.twp,
         addr : data.addr,
-        cat:data.title.slice(0,2)
+        cat:data.title.slice(0,3)
       };
       calls.push(call);
       // TODO créer l'objet call à partir de la ligne
